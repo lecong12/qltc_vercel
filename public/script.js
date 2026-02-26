@@ -61,13 +61,13 @@ function renderTransactionTable(data) {
     tbody.innerHTML = ''; // Xóa dữ liệu cũ
     data.forEach(item => {
         const isIncome = item.type && (item.type.trim().toLowerCase() === 'thu' || item.type.trim().toLowerCase() === 'income');
-        const amountClass = isIncome ? 'income-amount' : 'expense-amount';
+        const rowClass = isIncome ? 'income-row' : 'expense-row';
 
-        const row = `<tr>
+        const row = `<tr class="${rowClass}">
             <td>${item.date}</td>
             <td>${item.type}</td>
             <td>${item.category}</td>
-            <td class="${amountClass}">${item.amount.toLocaleString('de-DE')}</td>
+            <td>${item.amount.toLocaleString('de-DE')}</td>
             <td style="text-align: center; cursor: pointer;">✏️ 🗑</td>
         </tr>`;
         tbody.innerHTML += row;
