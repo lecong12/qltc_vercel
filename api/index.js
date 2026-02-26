@@ -18,7 +18,7 @@ const sheets = google.sheets({ version: 'v4', auth });
 const SPREADSHEET_ID = process.env.SPREADSHEET_ID;
 
 // API Lấy toàn bộ giao dịch tài chính
-app.get('/transactions', async (req, res) => {
+app.get('/api/qltc/transactions', async (req, res) => {
   try {
     // Giả sử dữ liệu nằm ở sheet 'GiaoDich' từ cột A đến G
     // (Ngày, Loại, Danh mục, Tài khoản, Số tiền, Ghi chú, Người tạo)
