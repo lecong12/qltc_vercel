@@ -42,12 +42,12 @@ function calculateSummary(data) {
     });
 
     // Cập nhật lên giao diện (đảm bảo bạn có các ID này trong HTML)
-    if(document.getElementById('totalIncome')) 
-        document.getElementById('totalIncome').innerText = totalIncome.toLocaleString() + 'đ';
-    if(document.getElementById('totalExpense')) 
-        document.getElementById('totalExpense').innerText = totalExpense.toLocaleString() + 'đ';
-    if(document.getElementById('balance')) 
-        document.getElementById('balance').innerText = (totalIncome - totalExpense).toLocaleString() + 'đ';
+    if(document.getElementById('totalIncome'))
+        document.getElementById('totalIncome').innerText = totalIncome.toLocaleString('vi-VN') + 'đ';
+    if(document.getElementById('totalExpense'))
+        document.getElementById('totalExpense').innerText = totalExpense.toLocaleString('vi-VN') + 'đ';
+    if(document.getElementById('balance'))
+        document.getElementById('balance').innerText = (totalIncome - totalExpense).toLocaleString('vi-VN') + 'đ';
 }
 
 // 4. Hàm hiển thị dữ liệu lên bảng HTML (Bổ sung)
@@ -60,11 +60,14 @@ function renderTransactionTable(data) {
     
     tbody.innerHTML = ''; // Xóa dữ liệu cũ
     data.forEach(item => {
+        const isIncome = item.type && (item.type.trim().toLowerCase() === 'thu' || item.type.trim().toLowerCase() === 'income');
+        const amountClass = isIncome ? 'income-amount' : 'expense-amount';
+
         const row = `<tr>
             <td>${item.date}</td>
             <td>${item.type}</td>
             <td>${item.category}</td>
-            <td>${item.amount.toLocaleString()}</td>
+            <td class="${amountClass}">${item.amount.toLocaleString('vi-VN')}</td>
             <td style="text-align: center; cursor: pointer;">✏️ 🗑</td>
         </tr>`;
         tbody.innerHTML += row;
