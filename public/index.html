@@ -78,17 +78,23 @@
         /* Mobile Optimization */
         @media (max-width: 600px) {
             body { padding: 10px; }
-            .header-bar { flex-direction: column; gap: 10px; align-items: stretch; text-align: center; }
-            .header-bar h1 { font-size: 1.3rem; margin: 0; }
+            .header-bar { 
+                flex-direction: row; /* Giữ trên 1 hàng */
+                justify-content: flex-end; /* Đẩy về bên phải */
+                border-bottom: none; /* Bỏ đường gạch chân */
+            }
+            .header-bar h1 { display: none; } /* Ẩn tiêu đề lớn */
             
             .summary { gap: 8px; margin-bottom: 15px; }
             .card { padding: 10px; min-width: 45%; }
             .card h3 { font-size: 14px; margin-bottom: 5px; }
             .card p { font-size: 18px; }
 
-            .filter-bar { gap: 8px; margin-bottom: 15px; }
-            .filter-bar input, .filter-bar select { width: 100%; box-sizing: border-box; }
-            .btn-add { width: 100%; margin-left: 0; }
+            .filter-bar { gap: 5px; margin-bottom: 15px; flex-wrap: nowrap; }
+            .filter-bar select { width: auto; max-width: 90px; box-sizing: border-box; }
+            .filter-bar input { width: auto; flex: 1; min-width: 0; box-sizing: border-box; }
+            .btn-add { width: auto; margin-left: 0; padding: 10px 12px; font-size: 0; }
+            .btn-add::before { content: "\f067"; font-family: "Font Awesome 6 Free"; font-weight: 900; font-size: 16px; }
 
             th, td { padding: 8px 5px; font-size: 13px; }
         }
