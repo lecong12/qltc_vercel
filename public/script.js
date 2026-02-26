@@ -68,7 +68,7 @@ function renderTransactionTable(data) {
             <td>${item.type}</td>
             <td>${item.category}</td>
             <td>${item.amount.toLocaleString('de-DE')}</td>
-            <td style="text-align: center; cursor: pointer;">✏️ 🗑</td>
+            <td class="actions-cell" style="text-align: center; cursor: pointer;">✏️ 🗑</td>
         </tr>`;
         tbody.innerHTML += row;
     });
