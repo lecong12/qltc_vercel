@@ -45,13 +45,12 @@ app.get('/api/qltc/transactions', async (req, res) => {
     const transactions = rows
       .filter(row => row.length > 0 && row[0]) // Bỏ qua các hàng trống để tránh lỗi
       .map(row => ({
-      date: row[0],
-      type: row[1],      // Thu hoặc Chi
-      category: row[2],
-      account: row[3],
-      amount: parseFloat((row[4] || '0').replace(/,/g, '')),
-      note: row[5],
-      id: row[6]         // ID duy nhất của giao dịch
+      id: row[0],        // Cột A: ID
+      date: row[1],      // Cột B: Ngày
+      type: row[2],      // Cột C: Loại
+      category: row[3],  // Cột D: Hạng mục
+      amount: parseFloat((row[4] || '0').replace(/,/g, '')), // Cột E: Số tiền
+      note: row[5] || '', // Cột F: Ghi chú (Thêm || '' để tránh lỗi undefined)
     }));
 
     res.json({ success: true, data: transactions });
