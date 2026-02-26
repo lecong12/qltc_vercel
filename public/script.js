@@ -295,6 +295,15 @@ function showToast(message, type = '') {
     setTimeout(() => { toast.className = toast.className.replace('show', ''); toast.classList.remove(type); }, 3000);
 }
 
+// Tính toán chiều cao của sticky header để đặt vị trí cho tiêu đề bảng
+function adjustStickyHeader() {
+    const header = document.querySelector('.sticky-header');
+    if (header) {
+        const height = header.offsetHeight;
+        document.documentElement.style.setProperty('--header-height', height + 'px');
+    }
+}
+
 // 5. Tự động chạy hàm này khi trang web tải xong
 document.addEventListener('DOMContentLoaded', () => {
     // Kiểm tra session cũ
@@ -303,6 +312,9 @@ document.addEventListener('DOMContentLoaded', () => {
         currentUser = JSON.parse(savedUser);
     }
     updateUI();
+
+    adjustStickyHeader();
+    window.addEventListener('resize', adjustStickyHeader);
 
     loadFinancialData();
     document.getElementById('filterType').addEventListener('change', applyFilters);
