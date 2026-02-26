@@ -93,6 +93,7 @@
             .header-bar { 
                 flex-direction: row; /* Giữ trên 1 hàng */
                 justify-content: space-between; /* Căn đều 2 bên */
+                gap: 10px; /* Giảm khoảng cách giữa các phần tử */
                 border-bottom: none; /* Bỏ đường gạch chân */
             }
             .header-bar h1 { display: block; font-size: 16px; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; text-align: left; min-width: 0; }
@@ -124,7 +125,7 @@
             </div>
         </div>
 
-        <!-- Khu vực tổng kết tiền -->
+        <!-- Khu vực tổng kết tiền (đã đưa vào trong sticky-header) -->
         <div class="summary">
             <div class="card income">
                 <h3>Tổng Thu</h3>
