@@ -15,10 +15,18 @@ app.get('/api/qltc/transactions', async (req, res) => {
       return res.status(500).json({ success: false, message: 'Server configuration error.' });
     }
 
+    // Xử lý Private Key:
+    // 1. Thay thế \\n thành \n (nếu copy từ JSON)
+    // 2. Nếu key bị bao quanh bởi dấu ngoặc kép (do copy thừa), hãy loại bỏ chúng
+    let privateKey = GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n');
+    if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
+      privateKey = privateKey.slice(1, -1);
+    }
+
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: GOOGLE_SERVICE_ACCOUNT_EMAIL,
-        private_key: GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+        private_key: privateKey,
       },
       scopes: ['https://www.googleapis.com/auth/spreadsheets'],
     });
