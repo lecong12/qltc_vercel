@@ -49,7 +49,7 @@ app.get('/api/qltc/transactions', async (req, res) => {
       date: row[1],      // Cột B: Ngày
       type: row[2],      // Cột C: Loại
       category: row[3],  // Cột D: Hạng mục
-      amount: parseFloat((row[4] || '0').replace(/,/g, '')), // Cột E: Số tiền
+      amount: parseFloat((row[4] || '0').replace(/\./g, '').replace(',', '.')), // Cột E: Số tiền (Hỗ trợ định dạng VN: 2.500.000)
       note: row[5] || '', // Cột F: Ghi chú (Thêm || '' để tránh lỗi undefined)
     }));
 

@@ -43,11 +43,11 @@ function calculateSummary(data) {
 
     // Cập nhật lên giao diện (đảm bảo bạn có các ID này trong HTML)
     if(document.getElementById('totalIncome'))
-        document.getElementById('totalIncome').innerText = totalIncome.toLocaleString('vi-VN') + 'đ';
+        document.getElementById('totalIncome').innerText = totalIncome.toLocaleString('de-DE') + 'đ';
     if(document.getElementById('totalExpense'))
-        document.getElementById('totalExpense').innerText = totalExpense.toLocaleString('vi-VN') + 'đ';
+        document.getElementById('totalExpense').innerText = totalExpense.toLocaleString('de-DE') + 'đ';
     if(document.getElementById('balance'))
-        document.getElementById('balance').innerText = (totalIncome - totalExpense).toLocaleString('vi-VN') + 'đ';
+        document.getElementById('balance').innerText = (totalIncome - totalExpense).toLocaleString('de-DE') + 'đ';
 }
 
 // 4. Hàm hiển thị dữ liệu lên bảng HTML (Bổ sung)
@@ -67,7 +67,7 @@ function renderTransactionTable(data) {
             <td>${item.date}</td>
             <td>${item.type}</td>
             <td>${item.category}</td>
-            <td class="${amountClass}">${item.amount.toLocaleString('vi-VN')}</td>
+            <td class="${amountClass}">${item.amount.toLocaleString('de-DE')}</td>
             <td style="text-align: center; cursor: pointer;">✏️ 🗑</td>
         </tr>`;
         tbody.innerHTML += row;
