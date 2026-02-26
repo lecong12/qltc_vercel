@@ -64,9 +64,38 @@
         
         /* Ẩn các phần tử chỉ dành cho Admin */
         .admin-only { display: none; }
+
+        /* Toast Notification */
+        #toast { visibility: hidden; min-width: 250px; margin-left: -125px; background-color: #333; color: #fff; text-align: center; border-radius: 5px; padding: 16px; position: fixed; z-index: 10; left: 50%; bottom: 30px; }
+        #toast.show { visibility: visible; -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        #toast.success { background-color: #28a745; }
+        #toast.error { background-color: #dc3545; }
+        @-webkit-keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @-webkit-keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+
+        /* Mobile Optimization */
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .header-bar { flex-direction: column; gap: 10px; align-items: stretch; text-align: center; }
+            .header-bar h1 { font-size: 1.3rem; margin: 0; }
+            
+            .summary { gap: 8px; margin-bottom: 15px; }
+            .card { padding: 10px; min-width: 45%; }
+            .card h3 { font-size: 14px; margin-bottom: 5px; }
+            .card p { font-size: 18px; }
+
+            .filter-bar { gap: 8px; margin-bottom: 15px; }
+            .filter-bar input, .filter-bar select { width: 100%; box-sizing: border-box; }
+            .btn-add { width: 100%; margin-left: 0; }
+
+            th, td { padding: 8px 5px; font-size: 13px; }
+        }
     </style>
 </head>
 <body>
+    <div id="toast"></div>
     <div class="header-bar">
         <h1>🏗️ QUẢN LÝ THU CHI</h1>
         <div id="authArea">

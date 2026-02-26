@@ -139,10 +139,10 @@ async function handleFormSubmit(event) {
             closeModal();
             loadFinancialData(); // Tải lại bảng
         } else {
-            alert('Lỗi: ' + result.message);
+            showToast('Lỗi: ' + result.message, 'error');
         }
     } catch (err) {
-        alert('Lỗi kết nối: ' + err.message);
+        showToast('Lỗi kết nối: ' + err.message, 'error');
     } finally {
         btn.innerText = 'Lưu Giao Dịch';
         btn.disabled = false;
@@ -151,7 +151,8 @@ async function handleFormSubmit(event) {
 
 // 9. Xóa giao dịch
 async function deleteTransaction(id) {
-    if (!confirm('Bạn có chắc chắn muốn xóa giao dịch này?')) return;
+    showToast('Chức năng này đang được phát triển');
+    // if (!confirm('Bạn có chắc chắn muốn xóa giao dịch này?')) return;
     
     try {
         const res = await fetch('/api/qltc/delete', {
@@ -162,11 +163,12 @@ async function deleteTransaction(id) {
         const result = await res.json();
         if (result.success) {
             loadFinancialData();
+            showToast('Đã xóa giao dịch thành công!', 'success');
         } else {
-            alert('Lỗi xóa: ' + result.message);
+            showToast('Lỗi xóa: ' + result.message, 'error');
         }
     } catch (err) {
-        alert('Lỗi kết nối: ' + err.message);
+        showToast('Lỗi kết nối: ' + err.message, 'error');
     }
 }
 
@@ -205,6 +207,8 @@ window.onclick = function(event) {
 function updateUI() {
     const authArea = document.getElementById('authArea');
     const adminElements = document.querySelectorAll('.admin-only');
+    const tableContainer = document.querySelector('.table-container');
+    const filterBar = document.querySelector('.filter-bar');
 
     if (currentUser) {
         // Đã đăng nhập
@@ -212,6 +216,8 @@ function updateUI() {
             <span class="user-info"><i class="fas fa-user-circle"></i> ${currentUser.name}</span>
             <button class="btn-logout" onclick="handleLogout()">Đăng xuất</button>
         `;
+        tableContainer.style.display = '';
+        filterBar.style.display = 'flex';
         
         // Hiển thị các phần tử admin với display phù hợp
         adminElements.forEach(el => {
@@ -227,6 +233,8 @@ function updateUI() {
             <button class="btn-login" onclick="openLoginModal()"><i class="fas fa-lock"></i> Đăng nhập</button>
         `;
         adminElements.forEach(el => el.style.display = 'none'); // Ẩn
+        tableContainer.style.display = 'none';
+        filterBar.style.display = 'none';
     }
 }
 
@@ -254,12 +262,12 @@ async function handleLogin() {
             localStorage.setItem('qltc_user', JSON.stringify(currentUser));
             closeLoginModal();
             updateUI();
-            alert('Xin chào ' + currentUser.name);
+            showToast('Xin chào ' + currentUser.name, 'success');
         } else {
-            alert(result.message);
+            showToast(result.message, 'error');
         }
     } catch (err) {
-        alert('Lỗi đăng nhập: ' + err.message);
+        showToast('Lỗi đăng nhập: ' + err.message, 'error');
     } finally {
         btn.innerText = 'Đăng nhập';
         btn.disabled = false;
@@ -267,11 +275,24 @@ async function handleLogin() {
 }
 
 function handleLogout() {
-    if(confirm('Bạn muốn đăng xuất?')) {
-        currentUser = null;
-        localStorage.removeItem('qltc_user');
-        updateUI();
+    // Thay thế confirm bằng toast
+    showToast('Đã đăng xuất thành công!', 'success');
+    currentUser = null;
+    localStorage.removeItem('qltc_user');
+    updateUI();
+}
+
+// Hàm hiển thị Toast
+function showToast(message, type = '') {
+    const toast = document.getElementById('toast');
+    toast.innerText = message;
+    toast.className = 'show';
+
+    if (type) {
+        toast.classList.add(type);
     }
+
+    setTimeout(() => { toast.className = toast.className.replace('show', ''); toast.classList.remove(type); }, 3000);
 }
 
 // 5. Tự động chạy hàm này khi trang web tải xong
