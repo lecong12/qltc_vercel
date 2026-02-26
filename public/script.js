@@ -1,5 +1,6 @@
 let allTransactions = [];
 let editingTransactionId = null;
+let currentUser = null;
 
 async function loadFinancialData() {
     try {
@@ -76,13 +77,14 @@ function renderTransactionTable(data) {
             <td>${item.type}</td>
             <td>${item.category}</td>
             <td>${item.amount.toLocaleString('de-DE')}</td>
-            <td class="actions-cell" style="text-align: center;">
+            <td class="actions-cell admin-only" style="text-align: center;">
                 <button onclick="editTransaction('${item.id}')" style="border:none; background:none; cursor:pointer; margin-right: 5px;">✏️</button>
                 <button onclick="deleteTransaction('${item.id}')" style="border:none; background:none; cursor:pointer;">🗑️</button>
             </td>
         </tr>`;
         tbody.innerHTML += row;
     });
+    updateUI(); // Cập nhật lại giao diện (ẩn/hiện nút) sau khi render
 }
 
 // --- CÁC HÀM MỚI BỔ SUNG ---
@@ -198,8 +200,83 @@ window.onclick = function(event) {
     }
 }
 
+// --- LOGIC ĐĂNG NHẬP / PHÂN QUYỀN ---
+
+function updateUI() {
+    const authArea = document.getElementById('authArea');
+    const adminElements = document.querySelectorAll('.admin-only');
+
+    if (currentUser) {
+        // Đã đăng nhập
+        authArea.innerHTML = `
+            <span class="user-info"><i class="fas fa-user-circle"></i> ${currentUser.name}</span>
+            <button class="btn-logout" onclick="handleLogout()">Đăng xuất</button>
+        `;
+        adminElements.forEach(el => el.style.display = ''); // Hiện các phần tử admin (dùng default display của thẻ)
+        // Riêng đối với các ô trong bảng (td, th), cần set display phù hợp nếu là table-cell
+        document.querySelectorAll('th.admin-only, td.admin-only').forEach(el => el.style.display = 'table-cell');
+    } else {
+        // Chưa đăng nhập
+        authArea.innerHTML = `
+            <button class="btn-login" onclick="openLoginModal()"><i class="fas fa-lock"></i> Đăng nhập</button>
+        `;
+        adminElements.forEach(el => el.style.display = 'none'); // Ẩn
+    }
+}
+
+function openLoginModal() { document.getElementById('loginModal').style.display = 'block'; }
+function closeLoginModal() { document.getElementById('loginModal').style.display = 'none'; }
+
+async function handleLogin() {
+    const username = document.getElementById('uName').value;
+    const password = document.getElementById('uPass').value;
+    const btn = document.querySelector('#loginModal .btn-save');
+    
+    btn.innerText = 'Đang kiểm tra...';
+    btn.disabled = true;
+
+    try {
+        const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        const result = await res.json();
+
+        if (result.success) {
+            currentUser = result.userData;
+            localStorage.setItem('qltc_user', JSON.stringify(currentUser));
+            closeLoginModal();
+            updateUI();
+            alert('Xin chào ' + currentUser.name);
+        } else {
+            alert(result.message);
+        }
+    } catch (err) {
+        alert('Lỗi đăng nhập: ' + err.message);
+    } finally {
+        btn.innerText = 'Đăng nhập';
+        btn.disabled = false;
+    }
+}
+
+function handleLogout() {
+    if(confirm('Bạn muốn đăng xuất?')) {
+        currentUser = null;
+        localStorage.removeItem('qltc_user');
+        updateUI();
+    }
+}
+
 // 5. Tự động chạy hàm này khi trang web tải xong
 document.addEventListener('DOMContentLoaded', () => {
+    // Kiểm tra session cũ
+    const savedUser = localStorage.getItem('qltc_user');
+    if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+    }
+    updateUI();
+
     loadFinancialData();
     document.getElementById('filterType').addEventListener('change', applyFilters);
     document.getElementById('searchInput').addEventListener('input', applyFilters);

@@ -167,4 +167,29 @@ app.post('/api/qltc/update', async (req, res) => {
   }
 });
 
+// API Đăng nhập
+app.post('/api/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const sheets = getSheetsClient();
+    const SPREADSHEET_ID = process.env.SPREADSHEET_ID;
+
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: SPREADSHEET_ID,
+      range: 'Users!A2:C', // Cột A: User, B: Pass, C: Tên hiển thị
+    });
+
+    const users = response.data.values || [];
+    const user = users.find(u => u[0] === username && u[1] === password);
+
+    if (user) {
+      res.json({ success: true, userData: { username: user[0], name: user[2] } });
+    } else {
+      res.status(401).json({ success: false, message: 'Sai tài khoản hoặc mật khẩu' });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 module.exports = app;
