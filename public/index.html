@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+    <meta name="google" content="notranslate">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lí Thu Chi</title>
@@ -21,7 +22,7 @@
         /* Bảng dữ liệu */
         .table-container { overflow-x: auto; background: white; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; }
+        td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; }
         th { background-color: #0070f3; color: white; white-space: nowrap; }
         tr:hover { background-color: #f5f5f5; }
         
@@ -41,7 +42,7 @@
         }
 
         /* Filter Bar & Buttons */
-        .filter-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+        .filter-bar { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; align-items: center; }
         .filter-bar input, .filter-bar select { padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
         .btn-add { background-color: #0070f3; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-left: auto; }
         .btn-add:hover { background-color: #005bb5; }
@@ -57,7 +58,7 @@
         .btn-save:hover { background-color: #218838; }
 
         /* Header & Login Styles */
-        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #ddd; }
+        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #ddd; }
         .user-info { font-weight: bold; color: #0070f3; margin-right: 10px; }
         .btn-login { background-color: #0070f3; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
         .btn-logout { background-color: #666; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
@@ -75,6 +76,17 @@
         @-webkit-keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
+        /* Sticky Header */
+        .sticky-header {
+            position: -webkit-sticky; /* Safari */
+            position: sticky;
+            top: 0;
+            background-color: #f9f9f9; /* Match body background */
+            padding-top: 10px;
+            z-index: 5;
+        }
+        th { position: -webkit-sticky; position: sticky; top: 180px; /* Adjust this value based on the height of your header+summary+filter */ }
+
         /* Mobile Optimization */
         @media (max-width: 600px) {
             body { padding: 10px; }
@@ -83,7 +95,7 @@
                 justify-content: space-between; /* Căn đều 2 bên */
                 border-bottom: none; /* Bỏ đường gạch chân */
             }
-            .header-bar h1 { display: block; font-size: 16px; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; text-align: left; min-width: 0; } /* Hiện lại tiêu đề nhỏ gọn */
+            .header-bar h1 { display: block; font-size: 16px; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; text-align: left; min-width: 0; }
             
             .summary { gap: 8px; margin-bottom: 15px; }
             .card { padding: 10px; min-width: 45%; }
@@ -96,43 +108,46 @@
             .btn-add { width: auto; margin-left: 0; padding: 10px 12px; font-size: 0; }
             .btn-add::before { content: "\f067"; font-family: "Font Awesome 6 Free"; font-weight: 900; font-size: 16px; }
 
-            th, td { padding: 8px 5px; font-size: 13px; }
+            td { padding: 8px 5px; font-size: 13px; }
+            th { top: 135px; /* Adjust for mobile */ }
         }
     </style>
 </head>
 <body>
     <div id="toast"></div>
-    <div class="header-bar">
-        <h1>🏗️ QUẢN LÝ THU CHI</h1>
-        <div id="authArea">
-            <!-- Nội dung sẽ được JS cập nhật -->
-            <button class="btn-login" onclick="openLoginModal()"><i class="fas fa-lock"></i> Đăng nhập</button>
+    <div class="sticky-header">
+        <div class="header-bar">
+            <h1>🏗️ QUẢN LÝ THU CHI</h1>
+            <div id="authArea">
+                <!-- Nội dung sẽ được JS cập nhật -->
+                <button class="btn-login" onclick="openLoginModal()"><i class="fas fa-lock"></i> Đăng nhập</button>
+            </div>
         </div>
-    </div>
 
-    <!-- Khu vực tổng kết tiền -->
-    <div class="summary">
-        <div class="card income">
-            <h3>Tổng Thu</h3>
-            <p id="totalIncome" style="color: #27ae60;">0đ</p>
+        <!-- Khu vực tổng kết tiền -->
+        <div class="summary">
+            <div class="card income">
+                <h3>Tổng Thu</h3>
+                <p id="totalIncome" style="color: #27ae60;">0đ</p>
+            </div>
+            <div class="card expense">
+                <h3>Tổng Chi</h3>
+                <p id="totalExpense" style="color: #c0392b;">0đ</p>
+            </div>
+            <div class="card balance">
+                <h3>Số dư hiện tại</h3>
+                <p id="balance" style="color: #2980b9;">0đ</p>
+            </div>
         </div>
-        <div class="card expense">
-            <h3>Tổng Chi</h3>
-            <p id="totalExpense" style="color: #c0392b;">0đ</p>
-        </div>
-        <div class="card balance">
-            <h3>Số dư hiện tại</h3>
-            <p id="balance" style="color: #2980b9;">0đ</p>
-        </div>
-    </div>
 
-    <!-- Thanh công cụ -->
-    <div class="filter-bar">
-        <form autocomplete="off">
-            <select id="filterType"><option value="all">Tất cả loại</option><option value="Thu">Thu</option><option value="Chi">Chi</option></select>
-            <input type="text" id="searchInput" placeholder="Tìm kiếm nội dung..." autocomplete="off">
-        </form>
-        <button class="btn-add admin-only" onclick="showModal()">+ THÊM GIAO DỊCH</button>
+        <!-- Thanh công cụ -->
+        <div class="filter-bar">
+            <form autocomplete="off">
+                <select id="filterType"><option value="all">Tất cả loại</option><option value="Thu">Thu</option><option value="Chi">Chi</option></select>
+                <input type="text" id="searchInput" placeholder="Tìm kiếm nội dung..." autocomplete="off">
+            </form>
+            <button class="btn-add admin-only" onclick="showModal()">+ THÊM GIAO DỊCH</button>
+        </div>
     </div>
 
     <!-- Bảng danh sách giao dịch -->
