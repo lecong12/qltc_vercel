@@ -7,12 +7,15 @@ async function loadFinancialData() {
         const result = await res.json();
         
         if (result.success) {
-            s plyFilters(); // Áp dụng bộ lọc và hiển thị dữ liệu
-            ịer trả về (ví dụ: sai tên sheet, chưa share quyền)
+            allTransactions = result.data;
+            applyFilters(); // Áp dụng bộ lọc và hiển thị dữ liệu
+        } else {
+            // Hiển thị lỗi từ Server trả về (ví dụ: sai tên sheet, chưa share quyền)
             console.error("Lỗi từ server:", result.message);
             const loadingEl = document.querySelector('.loading');
             if (loadingEl) loadingEl.innerText = '⚠️ Lỗi: ' + result.message;
         }
+    } catch (err) {
         console.error("Lỗi tải dữ liệu tài chính:", err);
         const loadingEl = document.querySelector('.loading');
         if (loadingEl) loadingEl.innerText = '⚠️ Lỗi kết nối: ' + err.message;
@@ -95,6 +98,8 @@ function showModal() {
 
 // 7. Đóng Modal
 function closeModal() {
+    document.getElementById('transactionModal').style.display = 'none';
+    document.getElementById('transactionForm').reset();
     editingTransactionId = null;
     document.getElementById('modalTitle').innerText = 'Thêm Giao Dịch Mới';
 }
@@ -132,7 +137,8 @@ async function handleFormSubmit(event) {
             closeModal();
             loadFinancialData(); // Tải lại bảng
         } else {
-            alert('Lỗi: ' + resu
+            alert('Lỗi: ' + result.message);
+        }
     } catch (err) {
         alert('Lỗi kết nối: ' + err.message);
     } finally {
