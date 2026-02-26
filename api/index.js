@@ -4,6 +4,25 @@ const app = express();
 
 app.use(express.json());
 
+// Helper: Khởi tạo Google Sheets Client
+function getSheetsClient() {
+  const { GOOGLE_SERVICE_ACCOUNT_EMAIL, GOOGLE_PRIVATE_KEY } = process.env;
+  if (!GOOGLE_SERVICE_ACCOUNT_EMAIL || !GOOGLE_PRIVATE_KEY) {
+    throw new Error('Missing required environment variables.');
+  }
+
+  let privateKey = GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n');
+  if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
+    privateKey = privateKey.slice(1, -1);
+  }
+
+  const auth = new google.auth.GoogleAuth({
+    credentials: { client_email: GOOGLE_SERVICE_ACCOUNT_EMAIL, private_key: privateKey },
+    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+  });
+  return google.sheets({ version: 'v4', auth });
+}
+
 // API Lấy toàn bộ giao dịch tài chính
 app.get('/api/qltc/transactions', async (req, res) => {
   try {
@@ -15,23 +34,7 @@ app.get('/api/qltc/transactions', async (req, res) => {
       return res.status(500).json({ success: false, message: 'Server configuration error.' });
     }
 
-    // Xử lý Private Key:
-    // 1. Thay thế \\n thành \n (nếu copy từ JSON)
-    // 2. Nếu key bị bao quanh bởi dấu ngoặc kép (do copy thừa), hãy loại bỏ chúng
-    let privateKey = GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n');
-    if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
-      privateKey = privateKey.slice(1, -1);
-    }
-
-    const auth = new google.auth.GoogleAuth({
-      credentials: {
-        client_email: GOOGLE_SERVICE_ACCOUNT_EMAIL,
-        private_key: privateKey,
-      },
-      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-    });
-
-    const sheets = google.sheets({ version: 'v4', auth });
+    const sheets = getSheetsClient();
 
     // Giả sử dữ liệu nằm ở sheet 'GiaoDich' từ cột A đến G
     // (Ngày, Loại, Danh mục, Tài khoản, Số tiền, Ghi chú, Người tạo)
@@ -58,6 +61,71 @@ app.get('/api/qltc/transactions', async (req, res) => {
     // Log lỗi chi tiết ở phía server để debug (xem trên Vercel Logs)
     console.error('API Error fetching transactions:', error);
     // Chỉ gửi một thông báo lỗi chung cho client
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// API Thêm giao dịch mới
+app.post('/api/qltc/add', async (req, res) => {
+  try {
+    const { date, type, category, amount, note } = req.body;
+    const sheets = getSheetsClient();
+    const SPREADSHEET_ID = process.env.SPREADSHEET_ID;
+    const id = Date.now().toString(); // Tạo ID duy nhất dựa trên thời gian
+
+    await sheets.spreadsheets.values.append({
+      spreadsheetId: SPREADSHEET_ID,
+      range: 'Data!A2',
+      valueInputOption: 'USER_ENTERED',
+      resource: {
+        // Thứ tự cột: ID, Ngày, Loại, Hạng mục, Số tiền, Ghi chú
+        values: [[id, date, type, category, amount, note]]
+      },
+    });
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Add Error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// API Xóa giao dịch
+app.post('/api/qltc/delete', async (req, res) => {
+  try {
+    const { id } = req.body;
+    const sheets = getSheetsClient();
+    const SPREADSHEET_ID = process.env.SPREADSHEET_ID;
+
+    // 1. Tìm sheetId của sheet 'Data'
+    const meta = await sheets.spreadsheets.get({ spreadsheetId: SPREADSHEET_ID });
+    const sheet = meta.data.sheets.find(s => s.properties.title === 'Data');
+    if (!sheet) throw new Error('Sheet "Data" not found');
+    const sheetId = sheet.properties.sheetId;
+
+    // 2. Tìm dòng chứa ID cần xóa
+    const data = await sheets.spreadsheets.values.get({
+      spreadsheetId: SPREADSHEET_ID,
+      range: 'Data!A:A', // Chỉ đọc cột ID
+    });
+    const rows = data.data.values || [];
+    const rowIndex = rows.findIndex(row => row[0] === id.toString());
+
+    if (rowIndex === -1) return res.status(404).json({ success: false, message: 'Transaction not found' });
+
+    // 3. Xóa dòng đó
+    await sheets.spreadsheets.batchUpdate({
+      spreadsheetId: SPREADSHEET_ID,
+      resource: {
+        requests: [{
+          deleteDimension: {
+            range: { sheetId: sheetId, dimension: 'ROWS', startIndex: rowIndex, endIndex: rowIndex + 1 }
+          }
+        }]
+      }
+    });
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Delete Error:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 });

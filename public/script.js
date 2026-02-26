@@ -68,10 +68,92 @@ function renderTransactionTable(data) {
             <td>${item.type}</td>
             <td>${item.category}</td>
             <td>${item.amount.toLocaleString('de-DE')}</td>
-            <td class="actions-cell" style="text-align: center; cursor: pointer;">✏️ 🗑</td>
+            <td class="actions-cell" style="text-align: center;">
+                <button onclick="deleteTransaction('${item.id}')" style="border:none; background:none; cursor:pointer;">🗑️</button>
+            </td>
         </tr>`;
         tbody.innerHTML += row;
     });
+}
+
+// --- CÁC HÀM MỚI BỔ SUNG ---
+
+// 6. Hiển thị Modal
+function showModal() {
+    document.getElementById('transactionModal').style.display = 'block';
+    // Đặt ngày mặc định là hôm nay
+    document.getElementById('tDate').valueAsDate = new Date();
+}
+
+// 7. Đóng Modal
+function closeModal() {
+    document.getElementById('transactionModal').style.display = 'none';
+    document.getElementById('transactionForm').reset();
+}
+
+// 8. Xử lý Submit Form (Thêm mới)
+async function handleFormSubmit(event) {
+    event.preventDefault();
+    const btn = document.querySelector('.btn-save');
+    btn.innerText = 'Đang lưu...';
+    btn.disabled = true;
+
+    const data = {
+        date: document.getElementById('tDate').value.split('-').reverse().join('/'), // Chuyển yyyy-mm-dd thành dd/mm/yyyy
+        type: document.getElementById('tType').value,
+        category: document.getElementById('tCategory').value,
+        amount: document.getElementById('tAmount').value,
+        note: document.getElementById('tNote').value
+    };
+
+    try {
+        const res = await fetch('/api/qltc/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        if (result.success) {
+            closeModal();
+            loadFinancialData(); // Tải lại bảng
+        } else {
+            alert('Lỗi: ' + result.message);
+        }
+    } catch (err) {
+        alert('Lỗi kết nối: ' + err.message);
+    } finally {
+        btn.innerText = 'Lưu Giao Dịch';
+        btn.disabled = false;
+    }
+}
+
+// 9. Xóa giao dịch
+async function deleteTransaction(id) {
+    if (!confirm('Bạn có chắc chắn muốn xóa giao dịch này?')) return;
+    
+    try {
+        const res = await fetch('/api/qltc/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+        });
+        const result = await res.json();
+        if (result.success) {
+            loadFinancialData();
+        } else {
+            alert('Lỗi xóa: ' + result.message);
+        }
+    } catch (err) {
+        alert('Lỗi kết nối: ' + err.message);
+    }
+}
+
+// Đóng modal khi click ra ngoài
+window.onclick = function(event) {
+    const modal = document.getElementById('transactionModal');
+    if (event.target == modal) {
+        closeModal();
+    }
 }
 
 // 5. Tự động chạy hàm này khi trang web tải xong
