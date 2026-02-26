@@ -34,7 +34,7 @@ app.get('/api/qltc/transactions', async (req, res) => {
       type: row[1],      // Thu hoặc Chi
       category: row[2],
       account: row[3],
-      amount: parseFloat(row[4].replace(/,/g, '') || 0),
+      amount: parseFloat((row[4] || '0').replace(/,/g, '')),
       note: row[5],
       id: row[6]         // ID duy nhất của giao dịch
     }));
