@@ -80,10 +80,10 @@
             body { padding: 10px; }
             .header-bar { 
                 flex-direction: row; /* Giữ trên 1 hàng */
-                justify-content: flex-end; /* Đẩy về bên phải */
+                justify-content: space-between; /* Căn đều 2 bên */
                 border-bottom: none; /* Bỏ đường gạch chân */
             }
-            .header-bar h1 { display: none; } /* Ẩn tiêu đề lớn */
+            .header-bar h1 { display: block; font-size: 16px; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } /* Hiện lại tiêu đề nhỏ gọn */
             
             .summary { gap: 8px; margin-bottom: 15px; }
             .card { padding: 10px; min-width: 45%; }
