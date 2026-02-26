@@ -42,3 +42,27 @@ function calculateSummary(data) {
     if(document.getElementById('balance')) 
         document.getElementById('balance').innerText = (totalIncome - totalExpense).toLocaleString() + 'đ';
 }
+
+// 4. Hàm hiển thị dữ liệu lên bảng HTML (Bổ sung)
+function renderTransactionTable(data) {
+    // Lưu ý: Trong file index.html của bạn cần có thẻ <tbody> với id="transactionTableBody"
+    // Ví dụ: <table><tbody id="transactionTableBody"></tbody></table>
+    const tbody = document.getElementById('transactionTableBody') || document.querySelector('tbody');
+    
+    if (!tbody) return;
+    
+    tbody.innerHTML = ''; // Xóa dữ liệu cũ
+    data.forEach(item => {
+        const row = `<tr>
+            <td>${item.date}</td>
+            <td>${item.type}</td>
+            <td>${item.category}</td>
+            <td>${item.amount.toLocaleString()} đ</td>
+            <td>${item.note}</td>
+        </tr>`;
+        tbody.innerHTML += row;
+    });
+}
+
+// 5. Tự động chạy hàm này khi trang web tải xong
+document.addEventListener('DOMContentLoaded', loadFinancialData);
