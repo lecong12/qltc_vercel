@@ -1,0 +1,9 @@
+{
+  "name": "thu-chi-xay-nha",
+  "version": "1.0.0",
+  "main": "api/index.js",
+  "dependencies": {
+    "express": "^4.18.2",
+    "googleapis": "^105.0.0"
+  }
+}
