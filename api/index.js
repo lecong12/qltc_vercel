@@ -51,7 +51,7 @@ app.get('/api/qltc/transactions', async (req, res) => {
     // Log lỗi chi tiết ở phía server để debug (xem trên Vercel Logs)
     console.error('API Error fetching transactions:', error);
     // Chỉ gửi một thông báo lỗi chung cho client
-    res.status(500).json({ success: false, message: 'An internal server error occurred.' });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
