@@ -84,7 +84,7 @@ function renderTransactionTable(data) {
         </tr>`;
         tbody.innerHTML += row;
     });
-    updateUI(); // Cập nhật lại giao diện (ẩn/hiện nút) sau khi render
+    updateUI(); // Cập nhật lại giao diện (ẩn/hiện nút) sau khi render bảng
 }
 
 // --- CÁC HÀM MỚI BỔ SUNG ---
