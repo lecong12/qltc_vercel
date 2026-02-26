@@ -130,4 +130,41 @@ app.post('/api/qltc/delete', async (req, res) => {
   }
 });
 
+// API Cập nhật giao dịch
+app.post('/api/qltc/update', async (req, res) => {
+  try {
+    const { id, date, type, category, amount, note } = req.body;
+    const sheets = getSheetsClient();
+    const SPREADSHEET_ID = process.env.SPREADSHEET_ID;
+
+    // 1. Tìm sheetId và vị trí dòng
+    const data = await sheets.spreadsheets.values.get({
+      spreadsheetId: SPREADSHEET_ID,
+      range: 'Data!A:A', // Chỉ đọc cột ID để tìm kiếm
+    });
+    const rows = data.data.values || [];
+    const rowIndex = rows.findIndex(row => row[0] === id.toString());
+
+    if (rowIndex === -1) return res.status(404).json({ success: false, message: 'Transaction not found' });
+
+    // 2. Cập nhật dòng đó (rowIndex + 1 vì Google Sheets bắt đầu từ dòng 1)
+    // Cập nhật từ cột A đến F (ID, Ngày, Loại, Hạng mục, Số tiền, Ghi chú)
+    const range = `Data!A${rowIndex + 1}:F${rowIndex + 1}`;
+    
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: SPREADSHEET_ID,
+      range: range,
+      valueInputOption: 'USER_ENTERED',
+      resource: {
+        values: [[id, date, type, category, amount, note]]
+      }
+    });
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Update Error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 module.exports = app;

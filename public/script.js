@@ -1,32 +1,37 @@
+let allTransactions = [];
+let editingTransactionId = null;
+
 async function loadFinancialData() {
     try {
         const res = await fetch('/api/qltc/transactions');
         const result = await res.json();
         
         if (result.success) {
-            const data = result.data;
-            
-            // 1. Cập nhật bảng danh sách giao dịch
-            renderTransactionTable(data);
-            
-            // 2. Tính toán tổng số dư (Balance) cho QLTC
-            calculateSummary(data);
-            
-            // 3. Nếu bạn có dùng biểu đồ (ví dụ Chart.js)
-            if (typeof updateCharts === "function") {
-                updateCharts(data);
-            }
-        } else {
-            // Hiển thị lỗi từ Server trả về (ví dụ: sai tên sheet, chưa share quyền)
+            s plyFilters(); // Áp dụng bộ lọc và hiển thị dữ liệu
+            ịer trả về (ví dụ: sai tên sheet, chưa share quyền)
             console.error("Lỗi từ server:", result.message);
             const loadingEl = document.querySelector('.loading');
             if (loadingEl) loadingEl.innerText = '⚠️ Lỗi: ' + result.message;
         }
-    } catch (err) {
         console.error("Lỗi tải dữ liệu tài chính:", err);
         const loadingEl = document.querySelector('.loading');
         if (loadingEl) loadingEl.innerText = '⚠️ Lỗi kết nối: ' + err.message;
     }
+}
+
+function applyFilters() {
+    const typeFilter = document.getElementById('filterType').value;
+    const searchText = document.getElementById('searchInput').value.toLowerCase();
+
+    const filteredData = allTransactions.filter(item => {
+        const matchesType = typeFilter === 'all' || item.type === typeFilter;
+        const content = (item.category || '') + ' ' + (item.note || '');
+        const matchesSearch = content.toLowerCase().includes(searchText);
+        return matchesType && matchesSearch;
+    });
+
+    renderTransactionTable(filteredData);
+    calculateSummary(filteredData);
 }
 
 function calculateSummary(data) {
@@ -69,6 +74,7 @@ function renderTransactionTable(data) {
             <td>${item.category}</td>
             <td>${item.amount.toLocaleString('de-DE')}</td>
             <td class="actions-cell" style="text-align: center;">
+                <button onclick="editTransaction('${item.id}')" style="border:none; background:none; cursor:pointer; margin-right: 5px;">✏️</button>
                 <button onclick="deleteTransaction('${item.id}')" style="border:none; background:none; cursor:pointer;">🗑️</button>
             </td>
         </tr>`;
@@ -81,14 +87,16 @@ function renderTransactionTable(data) {
 // 6. Hiển thị Modal
 function showModal() {
     document.getElementById('transactionModal').style.display = 'block';
-    // Đặt ngày mặc định là hôm nay
-    document.getElementById('tDate').valueAsDate = new Date();
+    // Chỉ đặt ngày mặc định nếu đang thêm mới
+    if (!editingTransactionId) {
+        document.getElementById('tDate').valueAsDate = new Date();
+    }
 }
 
 // 7. Đóng Modal
 function closeModal() {
-    document.getElementById('transactionModal').style.display = 'none';
-    document.getElementById('transactionForm').reset();
+    editingTransactionId = null;
+    document.getElementById('modalTitle').innerText = 'Thêm Giao Dịch Mới';
 }
 
 // 8. Xử lý Submit Form (Thêm mới)
@@ -106,8 +114,15 @@ async function handleFormSubmit(event) {
         note: document.getElementById('tNote').value
     };
 
+    // Nếu đang sửa, thêm ID vào data và đổi URL
+    if (editingTransactionId) {
+        data.id = editingTransactionId;
+    }
+
+    const url = editingTransactionId ? '/api/qltc/update' : '/api/qltc/add';
+
     try {
-        const res = await fetch('/api/qltc/add', {
+        const res = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
@@ -117,8 +132,7 @@ async function handleFormSubmit(event) {
             closeModal();
             loadFinancialData(); // Tải lại bảng
         } else {
-            alert('Lỗi: ' + result.message);
-        }
+            alert('Lỗi: ' + resu
     } catch (err) {
         alert('Lỗi kết nối: ' + err.message);
     } finally {
@@ -148,6 +162,28 @@ async function deleteTransaction(id) {
     }
 }
 
+// 10. Sửa giao dịch
+function editTransaction(id) {
+    const transaction = allTransactions.find(t => t.id === id);
+    if (!transaction) return;
+
+    editingTransactionId = id;
+    
+    // Chuyển đổi ngày từ dd/mm/yyyy sang yyyy-mm-dd cho input date
+    const parts = transaction.date.split('/');
+    if (parts.length === 3) {
+        document.getElementById('tDate').value = `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+
+    document.getElementById('tType').value = transaction.type;
+    document.getElementById('tCategory').value = transaction.category;
+    document.getElementById('tAmount').value = transaction.amount;
+    document.getElementById('tNote').value = transaction.note;
+
+    document.getElementById('modalTitle').innerText = 'Sửa Giao Dịch';
+    showModal();
+}
+
 // Đóng modal khi click ra ngoài
 window.onclick = function(event) {
     const modal = document.getElementById('transactionModal');
@@ -157,4 +193,8 @@ window.onclick = function(event) {
 }
 
 // 5. Tự động chạy hàm này khi trang web tải xong
-document.addEventListener('DOMContentLoaded', loadFinancialData);
+document.addEventListener('DOMContentLoaded', () => {
+    loadFinancialData();
+    document.getElementById('filterType').addEventListener('change', applyFilters);
+    document.getElementById('searchInput').addEventListener('input', applyFilters);
+});
