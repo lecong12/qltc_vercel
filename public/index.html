@@ -2,14 +2,17 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Quản Lý Thu Chi</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div id="app">
-        <h2>🏗️ THU CHI XÂY NHÀ</h2>
-        <div id="displayArea"></div>
-    </div>
-    <script src="script.js"></script>
-</body>
-</html>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thu Chi Xây Nhà</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; }
+        h1 { text-align: center; color: #333; }
+        
+        /* Thẻ tổng quan */
+        .summary { display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
+        .card { background: white; padding: 20px; border-radius: 10px; flex: 1; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; min-width: 150px; }
+        .card h3 { margin: 0 0 10px 0; font-size: 16px; color: #666; }
+        .card p { font-size: 24px; font-weight: bold; margin: 0; }
+        
+        /* Bảng dữ liệu */
+        .table-container { overflow-x: auto; background: white; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
