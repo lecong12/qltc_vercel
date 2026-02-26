@@ -67,12 +67,12 @@ function renderTransactionTable(data) {
     
     if (!tbody) return;
     
-    tbody.innerHTML = ''; // Xóa dữ liệu cũ
-    data.forEach(item => {
+    // Sử dụng map và join để tạo HTML nhanh hơn, tránh lỗi render từng dòng
+    tbody.innerHTML = data.map(item => {
         const isIncome = item.type && (item.type.trim().toLowerCase() === 'thu' || item.type.trim().toLowerCase() === 'income');
         const rowClass = isIncome ? 'income-row' : 'expense-row';
 
-        const row = `<tr class="${rowClass}">
+        return `<tr class="${rowClass}">
             <td>${item.date}</td>
             <td>${item.type}</td>
             <td>${item.category}</td>
@@ -82,8 +82,8 @@ function renderTransactionTable(data) {
                 <button onclick="deleteTransaction('${item.id}')" style="border:none; background:none; cursor:pointer;">🗑️</button>
             </td>
         </tr>`;
-        tbody.innerHTML += row;
-    });
+    }).join('');
+    
     updateUI(); // Cập nhật lại giao diện (ẩn/hiện nút) sau khi render bảng
 }
 
@@ -212,9 +212,15 @@ function updateUI() {
             <span class="user-info"><i class="fas fa-user-circle"></i> ${currentUser.name}</span>
             <button class="btn-logout" onclick="handleLogout()">Đăng xuất</button>
         `;
-        adminElements.forEach(el => el.style.display = ''); // Hiện các phần tử admin (dùng default display của thẻ)
-        // Riêng đối với các ô trong bảng (td, th), cần set display phù hợp nếu là table-cell
-        document.querySelectorAll('th.admin-only, td.admin-only').forEach(el => el.style.display = 'table-cell');
+        
+        // Hiển thị các phần tử admin với display phù hợp
+        adminElements.forEach(el => {
+            if (el.tagName === 'TH' || el.tagName === 'TD') {
+                el.style.display = 'table-cell';
+            } else {
+                el.style.display = 'inline-block';
+            }
+        });
     } else {
         // Chưa đăng nhập
         authArea.innerHTML = `
