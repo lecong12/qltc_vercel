@@ -16,3 +16,54 @@
         
         /* Bảng dữ liệu */
         .table-container { overflow-x: auto; background: white; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background-color: #0070f3; color: white; white-space: nowrap; }
+        tr:hover { background-color: #f5f5f5; }
+        
+        .loading { text-align: center; color: #666; font-style: italic; padding: 20px; }
+    </style>
+</head>
+<body>
+    <h1>🏗️ THU CHI XÂY NHÀ</h1>
+
+    <!-- Khu vực tổng kết tiền -->
+    <div class="summary">
+        <div class="card">
+            <h3>Tổng Thu</h3>
+            <p id="totalIncome" style="color: #27ae60;">0đ</p>
+        </div>
+        <div class="card">
+            <h3>Tổng Chi</h3>
+            <p id="totalExpense" style="color: #c0392b;">0đ</p>
+        </div>
+        <div class="card">
+            <h3>Số Dư Hiện Tại</h3>
+            <p id="balance" style="color: #2980b9;">0đ</p>
+        </div>
+    </div>
+
+    <!-- Bảng danh sách giao dịch -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Ngày</th>
+                    <th>Loại</th>
+                    <th>Hạng mục</th>
+                    <th>Số tiền</th>
+                    <th>Ghi chú</th>
+                </tr>
+            </thead>
+            <tbody id="transactionTableBody">
+                <tr>
+                    <td colspan="5" class="loading">Đang tải dữ liệu từ Google Sheets...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Script xử lý -->
+    <script src="script.js"></script>
+</body>
+</html>
