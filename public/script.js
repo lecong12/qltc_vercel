@@ -34,7 +34,7 @@ function calculateSummary(data) {
     let totalExpense = 0;
 
     data.forEach(item => {
-        if (item.type === 'Thu' || item.type === 'Income') {
+        if (item.type && (item.type.trim().toLowerCase() === 'thu' || item.type.trim().toLowerCase() === 'income')) {
             totalIncome += item.amount;
         } else {
             totalExpense += item.amount;
