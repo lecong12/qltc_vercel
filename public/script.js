@@ -63,9 +63,9 @@ function renderTransactionTable(data) {
         const row = `<tr>
             <td>${item.date}</td>
             <td>${item.type}</td>
-            <td>${item.category}</td>
-            <td>${item.amount.toLocaleString()} đ</td>
             <td>${item.note}</td>
+            <td>${item.amount.toLocaleString()}</td>
+            <td style="text-align: center; cursor: pointer;">✏️ 🗑</td>
         </tr>`;
         tbody.innerHTML += row;
     });
