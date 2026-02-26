@@ -29,7 +29,7 @@ app.get('/api/qltc/transactions', async (req, res) => {
     // (Ngày, Loại, Danh mục, Tài khoản, Số tiền, Ghi chú, Người tạo)
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: SPREADSHEET_ID,
-      range: 'GiaoDich!A2:G', 
+      range: 'Data!A2:G', 
     });
     
     // Xử lý dữ liệu thô thành JSON object để Frontend dễ đọc

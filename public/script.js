@@ -16,9 +16,16 @@ async function loadFinancialData() {
             if (typeof updateCharts === "function") {
                 updateCharts(data);
             }
+        } else {
+            // Hiển thị lỗi từ Server trả về (ví dụ: sai tên sheet, chưa share quyền)
+            console.error("Lỗi từ server:", result.message);
+            const loadingEl = document.querySelector('.loading');
+            if (loadingEl) loadingEl.innerText = '⚠️ Lỗi: ' + result.message;
         }
     } catch (err) {
         console.error("Lỗi tải dữ liệu tài chính:", err);
+        const loadingEl = document.querySelector('.loading');
+        if (loadingEl) loadingEl.innerText = '⚠️ Lỗi kết nối: ' + err.message;
     }
 }
 
