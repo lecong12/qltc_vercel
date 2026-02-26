@@ -128,8 +128,10 @@
 
     <!-- Thanh công cụ -->
     <div class="filter-bar">
-        <select id="filterType"><option value="all">Tất cả loại</option><option value="Thu">Thu</option><option value="Chi">Chi</option></select>
-        <input type="text" id="searchInput" placeholder="Tìm kiếm nội dung...">
+        <form autocomplete="off">
+            <select id="filterType"><option value="all">Tất cả loại</option><option value="Thu">Thu</option><option value="Chi">Chi</option></select>
+            <input type="text" id="searchInput" placeholder="Tìm kiếm nội dung..." autocomplete="off">
+        </form>
         <button class="btn-add admin-only" onclick="showModal()">+ THÊM GIAO DỊCH</button>
     </div>
 
@@ -191,10 +193,12 @@
     <div id="loginModal" class="modal">
         <div class="modal-content" style="max-width: 400px;">
             <span class="close" onclick="closeLoginModal()">&times;</span>
-            <h3>🔐 Đăng nhập hệ thống</h3>
-            <div class="form-group"><label>Tài khoản:</label><input type="text" id="uName"></div>
-            <div class="form-group"><label>Mật khẩu:</label><input type="password" id="uPass"></div>
-            <button class="btn-save" onclick="handleLogin()">Đăng nhập</button>
+            <form onsubmit="event.preventDefault(); handleLogin();">
+                <h3>🔐 Đăng nhập hệ thống</h3>
+                <div class="form-group"><label>Tài khoản:</label><input type="text" id="uName" autocomplete="username"></div>
+                <div class="form-group"><label>Mật khẩu:</label><input type="password" id="uPass" autocomplete="current-password"></div>
+                <button type="submit" class="btn-save">Đăng nhập</button>
+            </form>
         </div>
     </div>
 
