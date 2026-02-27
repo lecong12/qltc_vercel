@@ -15,9 +15,12 @@
         .card { background: white; padding: 10px; border-radius: 10px; flex: 1; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; min-width: 150px; }
         .card h3 { margin: 0 0 5px 0; font-size: 14px; color: #666; }
         .card p { font-size: 20px; font-weight: bold; margin: 0; }
-        .card.income { background-color: #e8f5e9; } /* Light Green */
-        .card.expense { background-color: #ffebee; } /* Light Red */
-        .card.balance { background-color: #e3f2fd; } /* Light Blue */
+        .card.income { background-color: #d1fae5; }
+        .card.income p { color: #047857; }
+        .card.expense { background-color: #fee2e2; }
+        .card.expense p { color: #b91c1c; }
+        .card.balance { background-color: #dbeafe; }
+        .card.balance p { color: #1d4ed8; }
         
         /* Bảng dữ liệu */
         .table-container { background: white; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
@@ -99,7 +102,7 @@
             .header-bar h1 { display: block; font-size: 16px; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; text-align: left; min-width: 0; }
             
             .summary { gap: 8px; margin-bottom: 10px; }
-            .card { padding: 10px; min-width: 45%; }
+            .card { padding: 10px; min-width: 0; } /* Cho phép thẻ co lại để vừa 1 hàng */
             .card h3 { font-size: 14px; margin-bottom: 5px; }
             .card p { font-size: 18px; }
 
@@ -128,15 +131,15 @@
         <div class="summary">
             <div class="card income">
                 <h3>TỔNG THU</h3>
-                <p id="totalIncome" style="color: #27ae60;">0đ</p>
+                <p id="totalIncome">0đ</p>
             </div>
             <div class="card expense">
                 <h3>TỔNG CHI</h3>
-                <p id="totalExpense" style="color: #c0392b;">0đ</p>
+                <p id="totalExpense">0đ</p>
             </div>
             <div class="card balance">
                 <h3>TỒN QUỸ</h3>
-                <p id="balance" style="color: #2980b9;">0đ</p>
+                <p id="balance">0đ</p>
             </div>
         </div>
 
